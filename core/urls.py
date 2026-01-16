@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from books.views import BooksAPI , LoginAPI , RegisterAPI
+from books.views import BooksAPI , LoginAPI , RegisterAPI, RentBookAPI, ReturnBookAPI
 from django.urls import path, include
 
 urlpatterns = [
@@ -23,5 +23,7 @@ urlpatterns = [
     path('index/', BooksAPI.as_view()),
     path('login/', LoginAPI.as_view()),
     path('register/', RegisterAPI.as_view()),
+    path('rent/<int:book_id>/', RentBookAPI.as_view()),
+    path('return/<int:book_id>/', ReturnBookAPI.as_view()),
     # path('library/', include('books.urls')),
 ]

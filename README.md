@@ -45,7 +45,7 @@ This system allows users to register, login, view books, rent and return books, 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/library-management.git
+git clone https://github.com/mirzasalem/library_management_api
 cd library-management
 ```
 

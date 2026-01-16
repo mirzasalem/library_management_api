@@ -60,26 +60,11 @@ class CategorySerializer(serializers.ModelSerializer):
         
 class AddBookSerializer(serializers.ModelSerializer):
     
-    password = serializers.CharField(write_only= True)
-    role = serializers.ChoiceField(
-        choices=[('student', 'Student'), ('staff', 'Staff')],
-        default='student'
-    )
     class Meta:
-        model = User
-        fields = ['username','email', 'password', 'role']
+        model = Book
+        fields = ['title', 'total_copies', 'available_copies']
 
     def validate(self, data):
-        if User.objects.filter(username = data['username']).exists():
-            raise serializers.ValidationError('Username Already Exists')
-        if User.objects.filter(email = data['email']).exists():
-            raise serializers.ValidationError('Email Already Exists')
+        if data['total_copies'] < data['available_copies']:
+            raise serializers.ValidationError("Available copies cannot be greater than total copies")
         return data
-
-    def create(self, validated_data):
-        role = validated_data.pop('role')
-        user = User.objects.create(username = validated_data['username'], email = validated_data['email'], is_staff=True if role == 'staff' else False)
-        user.set_password(validated_data['password'])
-       
-        user.save()
-        return user

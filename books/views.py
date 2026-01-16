@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status 
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser
 from serializers.serializers import BookSerializer, LoginSerializer, RegisterSerializer, AddBookSerializer
 # Create your views here.
 
@@ -102,13 +103,27 @@ class BooksAPI(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
         
-class AddBookAPI(APIView):
-    def post(self, request):
-        data = request.data
-        serializer = BookSerializer(data = data)
-        if not serializer.is_valid():
-            return Response({'status' : 'False', 'msg' : serializer.errors}, status.HTTP_406_NOT_ACCEPTABLE)
-        serializer.save()
-        return Response({'status' : 'True', 'msg' : 'Book created successfully'}, status.HTTP_201_CREATED)
+# class AddBookAPI(APIView):
+#     def post(self, request):
+#         if not request.user.is_staff:
+#             return Response(
+#                 {'detail': 'Only staff can add books'},
+#                 status=status.HTTP_403_FORBIDDEN
+#             )
+#         data = request.data
+#         serializer = AddBookSerializer(data = data)
+#         if not serializer.is_valid():
+#             return Response(serializer.errors)
+#         serializer.save()
+#         return Response({'status' : 'True', 'msg' : 'Book Added successfully'}, status.HTTP_201_CREATED)
     
     
+class AddBookAPI(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = AddBookSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsAdminUser()]
+        return [IsAuthenticated()]
